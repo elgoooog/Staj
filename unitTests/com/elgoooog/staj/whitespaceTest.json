@@ -1,0 +1,12 @@
+{
+    "something": "somethingElse",
+    "another": [
+        "hi",
+        true,
+        null,
+        {
+            "hi": 123
+        }
+    ],
+    "pint": false
+}
