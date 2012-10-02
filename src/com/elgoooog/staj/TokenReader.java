@@ -72,13 +72,53 @@ public class TokenReader implements Closeable {
 
 		while ('"' != c) {
 			if (c == '\\') {
-				// process escaped characters
+				c = parseEscapedCharacter();
 			}
 			builder.append(c);
 			c = (char) reader.read();
 		}
 
 		return Token.s(builder.toString());
+	}
+
+	protected char parseEscapedCharacter() throws IOException {
+		final char c = (char) reader.read();
+
+		switch (c) {
+		case '"':
+		case '\\':
+		case '/':
+			return c;
+		case 'b':
+			return '\b';
+		case 'f':
+			return '\f';
+		case 'r':
+			return '\r';
+		case 't':
+			return '\t';
+		case 'n':
+			return '\n';
+		case 'u':
+			return parseUnicodeCharacter();
+		default:
+			throw new JsonParseException(
+					"Improperly escaped character sequence: \\" + c);
+		}
+	}
+
+	protected char parseUnicodeCharacter() throws IOException {
+		final char[] chars = new char[4];
+		reader.read(chars);
+
+		try {
+			return Character
+					.toChars(Integer.parseInt(String.valueOf(chars), 16))[0];
+		} catch (final Exception e) {
+			throw new JsonParseException(
+					"Non valid unicode value for character: " + chars[0]
+							+ chars[1] + chars[2] + chars[3]);
+		}
 	}
 
 	protected Token parseNumber(char c) throws IOException {

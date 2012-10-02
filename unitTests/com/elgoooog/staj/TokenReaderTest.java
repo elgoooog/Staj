@@ -43,7 +43,8 @@ public class TokenReaderTest {
 	public void testParseNull() throws Exception {
 		reader = new TokenReader(new StringReader("ull"));
 
-		reader.parseNull();
+		final Token token = reader.parseNull();
+		assertEquals(Token.NULL, token);
 	}
 
 	@Test(expected = JsonParseException.class)
@@ -57,7 +58,8 @@ public class TokenReaderTest {
 	public void testParseFalse() throws Exception {
 		reader = new TokenReader(new StringReader("alse"));
 
-		reader.parseFalse();
+		final Token token = reader.parseFalse();
+		assertEquals(Token.FALSE, token);
 	}
 
 	@Test(expected = JsonParseException.class)
@@ -71,7 +73,8 @@ public class TokenReaderTest {
 	public void testParseTrue() throws Exception {
 		reader = new TokenReader(new StringReader("rue"));
 
-		reader.parseTrue();
+		final Token token = reader.parseTrue();
+		assertEquals(Token.TRUE, token);
 	}
 
 	@Test(expected = JsonParseException.class)
@@ -93,6 +96,46 @@ public class TokenReaderTest {
 		reader = new TokenReader(new StringReader("hello world"));
 
 		reader.parseExactWord("tally ho!");
+	}
+
+	@Test
+	public void testParseEscapedCharacter1() throws Exception {
+		reader = new TokenReader(new StringReader("t"));
+
+		final char c = reader.parseEscapedCharacter();
+		assertEquals('\t', c);
+	}
+
+	@Test
+	public void testParseEscapedCharacter2() throws Exception {
+		reader = new TokenReader(new StringReader("\""));
+
+		final char c = reader.parseEscapedCharacter();
+		assertEquals('\"', c);
+	}
+
+	@Test
+	public void testParseUnicodeCharacter1() throws Exception {
+		reader = new TokenReader(new StringReader("0021"));
+
+		final char c = reader.parseUnicodeCharacter();
+		assertEquals('!', c);
+	}
+
+	@Test
+	public void testParseUnicodeCharacter2() throws Exception {
+		reader = new TokenReader(new StringReader("00A1"));
+
+		final char c = reader.parseUnicodeCharacter();
+		assertEquals('¡', c);
+	}
+
+	@Test
+	public void testParseUnicodeCharacter2_caseSensitive() throws Exception {
+		reader = new TokenReader(new StringReader("00a1"));
+
+		final char c = reader.parseUnicodeCharacter();
+		assertEquals('¡', c);
 	}
 
 	@Test
