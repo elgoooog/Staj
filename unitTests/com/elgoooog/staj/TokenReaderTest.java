@@ -46,7 +46,7 @@ public class TokenReaderTest {
 		reader.parseNull();
 	}
 
-	@Test(expected = ParseException.class)
+	@Test(expected = JsonParseException.class)
 	public void testParseNull_notNull() throws Exception {
 		reader = new TokenReader(new StringReader("ul!"));
 
@@ -60,7 +60,7 @@ public class TokenReaderTest {
 		reader.parseFalse();
 	}
 
-	@Test(expected = ParseException.class)
+	@Test(expected = JsonParseException.class)
 	public void testParseFalse_notFalse() throws Exception {
 		reader = new TokenReader(new StringReader("a!se"));
 
@@ -74,7 +74,7 @@ public class TokenReaderTest {
 		reader.parseTrue();
 	}
 
-	@Test(expected = ParseException.class)
+	@Test(expected = JsonParseException.class)
 	public void testParseTrue_notTrue() throws Exception {
 		reader = new TokenReader(new StringReader("ru3"));
 
@@ -88,7 +88,7 @@ public class TokenReaderTest {
 		reader.parseExactWord("hello world");
 	}
 
-	@Test(expected = ParseException.class)
+	@Test(expected = JsonParseException.class)
 	public void testParseExactWord_fail() throws Exception {
 		reader = new TokenReader(new StringReader("hello world"));
 

@@ -74,17 +74,24 @@ public class StreamingJsonReader {
 	}
 
 	public static class JsonEvent {
-		public static final JsonEvent START = new JsonEvent("start", null);
-		public static final JsonEvent END = new JsonEvent("end", null);
+		public static final JsonEvent START = new JsonEvent("start",
+				JsonEventType.START);
+		public static final JsonEvent END = new JsonEvent("end",
+				JsonEventType.END);
 		public static final JsonEvent START_OBJECT = new JsonEvent("startObj",
-				null);
+				JsonEventType.START_OBJECT);
 		public static final JsonEvent START_ARRAY = new JsonEvent("startArr",
-				null);
-		public static final JsonEvent END_OBJECT = new JsonEvent("endObj", null);
-		public static final JsonEvent END_ARRAY = new JsonEvent("endArr", null);
-		public static final JsonEvent NULL = new JsonEvent("null", null);
-		public static final JsonEvent TRUE = new JsonEvent("true", null);
-		public static final JsonEvent FALSE = new JsonEvent("false", null);
+				JsonEventType.START_ARRAY);
+		public static final JsonEvent END_OBJECT = new JsonEvent("endObj",
+				JsonEventType.END_OBJECT);
+		public static final JsonEvent END_ARRAY = new JsonEvent("endArr",
+				JsonEventType.END_ARRAY);
+		public static final JsonEvent NULL = new JsonEvent("null",
+				JsonEventType.NULL);
+		public static final JsonEvent TRUE = new JsonEvent("true",
+				JsonEventType.TRUE);
+		public static final JsonEvent FALSE = new JsonEvent("false",
+				JsonEventType.FALSE);
 
 		protected final String value;
 		protected final JsonEventType type;
@@ -96,18 +103,18 @@ public class StreamingJsonReader {
 
 		@Override
 		public String toString() {
-			return type == null ? value : type + ":" + value;
+			return type.toString().equals(value) ? value : type + ":" + value;
 		}
 
-		protected static JsonEvent s(final String s) {
+		protected static JsonEvent string(final String s) {
 			return new JsonEvent(s, JsonEventType.STRING);
 		}
 
-		protected static JsonEvent n(final String n) {
+		protected static JsonEvent number(final String n) {
 			return new JsonEvent(n, JsonEventType.NUMBER);
 		}
 
-		protected static JsonEvent k(final String k) {
+		protected static JsonEvent key(final String k) {
 			return new JsonEvent(k, JsonEventType.KEY);
 		}
 	}
@@ -118,6 +125,19 @@ public class StreamingJsonReader {
 		protected static final JsonEventType NUMBER = new JsonEventType(
 				"number");
 		protected static final JsonEventType KEY = new JsonEventType("key");
+		protected static final JsonEventType START = new JsonEventType("start");
+		protected static final JsonEventType END = new JsonEventType("end");
+		protected static final JsonEventType START_OBJECT = new JsonEventType(
+				"startObj");
+		protected static final JsonEventType START_ARRAY = new JsonEventType(
+				"startArr");
+		protected static final JsonEventType END_OBJECT = new JsonEventType(
+				"endObj");
+		protected static final JsonEventType END_ARRAY = new JsonEventType(
+				"endArr");
+		protected static final JsonEventType NULL = new JsonEventType("null");
+		protected static final JsonEventType TRUE = new JsonEventType("true");
+		protected static final JsonEventType FALSE = new JsonEventType("false");
 
 		protected final String name;
 

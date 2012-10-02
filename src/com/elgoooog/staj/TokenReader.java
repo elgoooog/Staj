@@ -61,7 +61,7 @@ public class TokenReader implements Closeable {
 		case 'f':
 			return parseFalse();
 		default:
-			throw new ParseException("not legal");
+			throw new JsonParseException("not legal");
 		}
 	}
 
@@ -123,7 +123,7 @@ public class TokenReader implements Closeable {
 	protected void parseExactWord(final CharSequence word) throws IOException {
 		for (int i = 0; i < word.length(); ++i) {
 			if (word.charAt(i) != reader.read()) {
-				throw new ParseException("expected word: " + word
+				throw new JsonParseException("expected word: " + word
 						+ " not found");
 			}
 		}
@@ -135,16 +135,20 @@ public class TokenReader implements Closeable {
 	}
 
 	protected static class Token {
-		protected static final Token END = new Token(null, null);
-		protected static final Token OPEN_BRACE = new Token("{", null);
-		protected static final Token CLOSE_BRACE = new Token("}", null);
-		protected static final Token OPEN_BRACKET = new Token("[", null);
-		protected static final Token CLOSE_BRACKET = new Token("]", null);
-		protected static final Token NULL = new Token("null", null);
-		protected static final Token FALSE = new Token("false", null);
-		protected static final Token TRUE = new Token("true", null);
-		protected static final Token COLON = new Token(":", null);
-		protected static final Token COMMA = new Token(",", null);
+		protected static final Token END = new Token("", TokenType.END);
+		protected static final Token OPEN_BRACE = new Token("{",
+				TokenType.OPEN_BRACE);
+		protected static final Token CLOSE_BRACE = new Token("}",
+				TokenType.CLOSE_BRACE);
+		protected static final Token OPEN_BRACKET = new Token("[",
+				TokenType.OPEN_BRACKET);
+		protected static final Token CLOSE_BRACKET = new Token("]",
+				TokenType.CLOSE_BRACKET);
+		protected static final Token NULL = new Token("null", TokenType.NULL);
+		protected static final Token FALSE = new Token("false", TokenType.FALSE);
+		protected static final Token TRUE = new Token("true", TokenType.TRUE);
+		protected static final Token COLON = new Token(":", TokenType.COLON);
+		protected static final Token COMMA = new Token(",", TokenType.COMMA);
 
 		protected final String value;
 		protected final TokenType type;
@@ -166,5 +170,15 @@ public class TokenReader implements Closeable {
 	protected static class TokenType {
 		protected static final TokenType STRING = new TokenType();
 		protected static final TokenType NUMBER = new TokenType();
+		protected static final TokenType END = new TokenType();
+		protected static final TokenType OPEN_BRACE = new TokenType();
+		protected static final TokenType CLOSE_BRACE = new TokenType();
+		protected static final TokenType OPEN_BRACKET = new TokenType();
+		protected static final TokenType CLOSE_BRACKET = new TokenType();
+		protected static final TokenType NULL = new TokenType();
+		protected static final TokenType FALSE = new TokenType();
+		protected static final TokenType TRUE = new TokenType();
+		protected static final TokenType COLON = new TokenType();
+		protected static final TokenType COMMA = new TokenType();
 	}
 }
