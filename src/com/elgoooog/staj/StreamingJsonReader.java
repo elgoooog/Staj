@@ -66,7 +66,7 @@ public class StreamingJsonReader {
 		while (true) {
 			try {
 				wait();
-				break;
+				return;
 			} catch (final InterruptedException e) {
 				// keep going
 			}
