@@ -53,12 +53,16 @@ public class TokenReader implements Closeable {
 		case '9':
 		case '0':
 		case '-':
-			return parseNumber(c);
+			reader.unread(c);
+			return parseNumber();
 		case 'n':
+			reader.unread(c);
 			return parseNull();
 		case 't':
+			reader.unread(c);
 			return parseTrue();
 		case 'f':
+			reader.unread(c);
 			return parseFalse();
 		default:
 			throw new JsonParseException("not legal");
@@ -121,18 +125,56 @@ public class TokenReader implements Closeable {
 		}
 	}
 
-	protected Token parseNumber(char c) throws IOException {
+	protected Token parseNumber() throws IOException {
 		final StringBuilder builder = new StringBuilder();
 
-		boolean hasDecimal = false;
+		char c = (char) reader.read();
 
-		while (Character.isDigit(c) || c == '-' || (!hasDecimal && c == '.')) {
-			if (c == '.') {
-				hasDecimal = true;
-			}
-
+		if (c == '-') {
 			builder.append(c);
 			c = (char) reader.read();
+		}
+
+		if (c == '0') {
+			builder.append(c);
+			c = (char) reader.read();
+		} else if (Character.isDigit(c)) {
+			do {
+				builder.append(c);
+				c = (char) reader.read();
+			} while (Character.isDigit(c));
+		} else {
+			throw new JsonParseException("Not a valid number");
+		}
+
+		if (c == '.') {
+			builder.append(c);
+			c = (char) reader.read();
+			if (Character.isDigit(c)) {
+				do {
+					builder.append(c);
+					c = (char) reader.read();
+				} while (Character.isDigit(c));
+			} else {
+				throw new JsonParseException("Not a valid number");
+			}
+		}
+
+		if (c == 'e' || c == 'E') {
+			builder.append(c);
+			c = (char) reader.read();
+			if (c == '+' || c == '-') {
+				builder.append(c);
+				c = (char) reader.read();
+			}
+			if (Character.isDigit(c)) {
+				do {
+					builder.append(c);
+					c = (char) reader.read();
+				} while (Character.isDigit(c));
+			} else {
+				throw new JsonParseException("Not a valid number");
+			}
 		}
 
 		if (c != -1) {
@@ -143,19 +185,19 @@ public class TokenReader implements Closeable {
 	}
 
 	protected Token parseNull() throws IOException {
-		parseExactWord("ull");
+		parseExactWord("null");
 
 		return Token.NULL;
 	}
 
 	protected Token parseFalse() throws IOException {
-		parseExactWord("alse");
+		parseExactWord("false");
 
 		return Token.FALSE;
 	}
 
 	protected Token parseTrue() throws IOException {
-		parseExactWord("rue");
+		parseExactWord("true");
 
 		return Token.TRUE;
 	}

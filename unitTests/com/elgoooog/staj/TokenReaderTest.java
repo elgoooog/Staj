@@ -22,26 +22,122 @@ public class TokenReaderTest {
 	}
 
 	@Test
-	public void testParseNumber() throws Exception {
-		reader = new TokenReader(new StringReader(".14"));
+	public void testParseNumber_whole() throws Exception {
+		reader = new TokenReader(new StringReader("3"));
 
-		final Token token = reader.parseNumber('3');
+		final Token token = reader.parseNumber();
+		assertEquals("3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_zero() throws Exception {
+		reader = new TokenReader(new StringReader("0"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_zeroPointSomething() throws Exception {
+		reader = new TokenReader(new StringReader("0.223"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0.223", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_e() throws Exception {
+		reader = new TokenReader(new StringReader("0.223e3"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0.223e3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_ePlus() throws Exception {
+		reader = new TokenReader(new StringReader("0.223e+3"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0.223e+3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_eMinus() throws Exception {
+		reader = new TokenReader(new StringReader("0.223e-3"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0.223e-3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_bigE() throws Exception {
+		reader = new TokenReader(new StringReader("0.223E3"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0.223E3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test
+	public void testParseNumber_decimal() throws Exception {
+		reader = new TokenReader(new StringReader("3.14"));
+
+		final Token token = reader.parseNumber();
 		assertEquals("3.14", token.value);
 		assertEquals(TokenType.NUMBER, token.type);
 	}
 
 	@Test
 	public void testParseNumber_negative() throws Exception {
-		reader = new TokenReader(new StringReader("3.14"));
+		reader = new TokenReader(new StringReader("-3.14"));
 
-		final Token token = reader.parseNumber('-');
+		final Token token = reader.parseNumber();
 		assertEquals("-3.14", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test(expected = JsonParseException.class)
+	public void testParseNumber_exception_noDigitsAfterDecimal()
+			throws Exception {
+		reader = new TokenReader(new StringReader("3."));
+
+		reader.parseNumber();
+	}
+
+	@Test
+	public void testParseNumber_exception_multipleDecimals() throws Exception {
+		reader = new TokenReader(new StringReader("3.3.4"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("3.3", token.value);
+		assertEquals(TokenType.NUMBER, token.type);
+	}
+
+	@Test(expected = JsonParseException.class)
+	public void testParseNumber_exception_nothingAfterE() throws Exception {
+		reader = new TokenReader(new StringReader("3.3e"));
+
+		reader.parseNumber();
+	}
+
+	@Test
+	public void testParseNumber_exception_numbersAfter0() throws Exception {
+		reader = new TokenReader(new StringReader("014"));
+
+		final Token token = reader.parseNumber();
+		assertEquals("0", token.value);
 		assertEquals(TokenType.NUMBER, token.type);
 	}
 
 	@Test
 	public void testParseNull() throws Exception {
-		reader = new TokenReader(new StringReader("ull"));
+		reader = new TokenReader(new StringReader("null"));
 
 		final Token token = reader.parseNull();
 		assertEquals(Token.NULL, token);
@@ -56,7 +152,7 @@ public class TokenReaderTest {
 
 	@Test
 	public void testParseFalse() throws Exception {
-		reader = new TokenReader(new StringReader("alse"));
+		reader = new TokenReader(new StringReader("false"));
 
 		final Token token = reader.parseFalse();
 		assertEquals(Token.FALSE, token);
@@ -71,7 +167,7 @@ public class TokenReaderTest {
 
 	@Test
 	public void testParseTrue() throws Exception {
-		reader = new TokenReader(new StringReader("rue"));
+		reader = new TokenReader(new StringReader("true"));
 
 		final Token token = reader.parseTrue();
 		assertEquals(Token.TRUE, token);
